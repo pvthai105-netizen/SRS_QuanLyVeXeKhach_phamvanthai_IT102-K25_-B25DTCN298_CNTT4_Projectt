@@ -443,7 +443,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
         return;
     }
     char tripId[30];
-    int tripIndex = -1;
+    int tripIndex = -1; 
     // --- BUOC 1: CHON CHUYEN XE ---
     do {
         printf("\n+--------BOOKING TICKET--------+\n");
@@ -451,7 +451,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
         fgets(tripId, sizeof(tripId), stdin);
         removeNewline(tripId); // Su dung ham ban da khai bao
         // Kiem tra rong
-        if(strlen(tripId) == 0) {
+        if(strlen(tripId) == 0||isEmpty(tripId)) {
             printf("Error: Trip ID cannot be empty!\n");
             continue;
         }
@@ -479,7 +479,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
     Trip *selectedTrip = &trips[tripIndex]; 
     Tiket newTiket; 
     // Tu dong tao Ticket ID (T001, T002...)
-    snprintf(newTiket.tiketId, sizeof(newTiket.tiketId), "T%03d", *tiketLength + 1);
+    snprintf(newTiket.tiketId, sizeof(newTiket.tiketId), "T%03d", *tiketLength + 1);//tao chuoi an toan ket hop dinh dang ma khong lo tran bo nho  
     strcpy(newTiket.tripId, selectedTrip->tripId); 
     // --- BUOC 2: NHAP TEN HANH KHACH ---
     do {
@@ -487,7 +487,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
         fgets(newTiket.passenger.name, sizeof(newTiket.passenger.name), stdin);
         removeNewline(newTiket.passenger.name); // Su dung ham ban da khai bao
 
-        if(strlen(newTiket.passenger.name) == 0) {
+        if(strlen(newTiket.passenger.name) == 0||isEmpty(newTiket.passenger.name)) {
             printf("Error: Passenger name cannot be empty!\n");
         } else {
             break;
@@ -504,9 +504,9 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
 	        continue;
 	    }
 	    // xoa ky tu '\n' neu co
-	    buffer[strcspn(buffer, "\n")] = '\0';
+	    removeNewline(buffer); 
 	    // kiem tra rong
-	    if (strlen(buffer) == 0) {
+	    if (strlen(buffer) == 0||isEmpty(buffer)) {
 	        printf("Error: Phone cannot be empty!\n");
 	        continue;
 	    }
@@ -517,7 +517,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
 	        validPhone = 0;
 	    } else {
 	        for (i = 0; i < len; i++) {
-	            if (buffer[i] < '0' || buffer[i] > '9') {
+	            if (buffer[i] <= '0' || buffer[i] >= '9') {
 	                validPhone = 0;
 	                break;
 	            }
@@ -573,7 +573,7 @@ void BookTicket(Trip *trips, int tripLength, Tiket *tikets, int *tiketLength) {
 	        continue;
 	    }
 	    // xoa ky tu xuong dong '\n' neu co
-	    buffer[strcspn(buffer, "\n")] = '\0';
+	    removeNewline(buffer); 
 	    // kiem tra nhap co phai la so hay khong
 	    if (sscanf(buffer, "%lf", &priceInput) != 1) {
 	        printf("Error: Price must be a number. Enter again!\n");
@@ -615,7 +615,7 @@ void CheckTicketStatus(Tiket *tikets, int tiketLength, Trip *trips, int tripLeng
         // Xoa ky tu xuong dong (enter) o cuoi chuoi
         removeNewline(id); 
         // Kiem tra ticketId khong duoc de trong
-        if (strlen(id) == 0) {
+        if (strlen(id) == 0||isEmpty(id)) {
             printf("Error: Ticket ID cannot be empty! Please try again.\n");
             continue;
         }
@@ -724,7 +724,7 @@ void PayTicket(Tiket tikets[], int tiketLength) {
         }
         removeNewline(id);
         // Kiem tra rong
-        if (strlen(id) == 0) {
+        if (strlen(id) == 0||isEmpty(id)) {
             printf("Ticket ID cannot be empty!\n");
         } else break;
 
@@ -748,7 +748,7 @@ void PayTicket(Tiket tikets[], int tiketLength) {
     // -1 = Locked
     // -2 = Canceled
     if (t->paymentStatus == -1 || t->paymentStatus == -2) {
-        printf("Ticket cannot be paid because it is disabled!\n");
+        printf("Ticket cannot be paid because it is disabled!\n");//vo hieu hoa  
         return;
     }
     // Kiem tra ve da thanh toan truoc do
@@ -783,7 +783,7 @@ void LockCancelTicket(Tiket tikets[], int tiketLength, Trip trips[], int tripLen
         printf("Enter Ticket ID: ");
         fgets(id, sizeof(id), stdin);
         removeNewline(id);
-        if (strlen(id) == 0) {
+        if (strlen(id) == 0||isEmpty(id)) {
             printf("[Case 3] Ticket ID cannot be empty!\n");
             continue;
         }
@@ -833,7 +833,7 @@ void LockCancelTicket(Tiket tikets[], int tiketLength, Trip trips[], int tripLen
                 printf("Status = Canceled\n");
                 printf("Seat released (bookedSeats--)\n");
             } else {
-                printf("[Case 3] Error: Associated trip not found.\n");
+                printf("[Case 3] Error: Associated trip not found.\n");//khong tim thay chuyen xe lien quan  
             }
             continue;
         }
@@ -904,7 +904,6 @@ void RevenueTicketStatisticsRepor(Trip *trips, int tripLength, Tiket *tikets, in
             for (i = 0; i < tripLength; i++) {
                 int total = 0, paid = 0, canceled = 0, valid = 0;
                 double revenue = 0;
-
                 for (j = 0; j < tiketLength; j++) {
                     if (strcmp(trips[i].tripId, tikets[j].tripId) == 0) {
                         total++;
@@ -916,7 +915,6 @@ void RevenueTicketStatisticsRepor(Trip *trips, int tripLength, Tiket *tikets, in
                         }
                     }
                 }
-
                 valid = total - canceled; // ve con hieu luc
                 printf("| %-10s | %-5d | %-5d | %-8d | %-5d | %-15.0f |\n",
                        trips[i].tripId, total, paid, canceled, valid, revenue);
